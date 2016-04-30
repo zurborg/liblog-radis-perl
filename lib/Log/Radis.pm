@@ -33,15 +33,15 @@ our $HOSTNAME = hostname();
 
 Radis (from I<Radio> and I<Redis>) is a concept of caching GELF messages in a Redis DB. Redis provides a I<reliable queue> via the I<(B)RPOPLPUSH> command. See L<http://redis.io/commands/rpoplpush> for more information about that mechanism.
 
-The implementation of a Radis client is quite simple: just push a GELF message with the L<LPUSH> command onto the queue. A collector fetches the messages from the queue and inserts them into a Graylog2 server, for example.
+The implementation of a Radis client is quite simple: just push a GELF message with the L<LPUSH|http://redis.io/commands/lpush> command onto the queue. A collector fetches the messages from the queue and inserts them into a Graylog2 server, for example.
 
 =cut
 
 =attr server
 
-The Redis DB server we should connect to.
+The Redis DB server we should connect to. Defaults to C<localhost:6379>.
 
-See L<Redis/server> for allowed values. Defaults to C<localhost:6379>.
+See L<Redis/server> for allowed values.
 
 =cut
 
@@ -247,9 +247,9 @@ sub log {
 
     $radis->push({ ... });
 
-    Raw-push a gelf message onto queue. If the argument is not a HashRef, it will be encoded to a JSON string.
+Raw-push a gelf message onto queue. If the argument is not a HashRef, it will be encoded to a JSON string.
 
-    The input is not validated, so be careful what you push onto the queue.
+The input is not validated, so be careful what you push onto the queue.
 
 =cut
 
