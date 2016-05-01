@@ -10,7 +10,7 @@ use JSON 2.90 qw(encode_json);
 use Time::HiRes 1.9726;
 use Sys::Hostname ;
 use Carp qw(croak carp);
-use Types::Standard 1 qw(HasMethods);
+use Scalar::Util qw(blessed);
 
 our $GELF_SPEC_VERSION = '1.1';
 our $HOSTNAME = hostname();
@@ -102,7 +102,11 @@ For your own Redis implementation use this attribute in the constructor. That sh
 
 has redis => (
     is => 'lazy',
-    isa => HasMethods[qw[ lpush ]],
+    isa => sub {
+        (blessed($_[0]) and ($_[0]->isa('Redis') or $_[0]->can('lpush'))) or
+        croak "Must be an instance of Redis".
+            " or a blessed reference implementing the 'lpush' method";
+    },
     builder => sub {
         my $self = shift;
         return Radis->new(
