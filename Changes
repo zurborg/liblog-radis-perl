@@ -1,6 +1,8 @@
 Revision history for Log-Radis
 
 {{$NEXT}}
+ - Fix documentation
+ - Fix failure with Redis
 
 0.001 2016-04-30
  - Initial release
