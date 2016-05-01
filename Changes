@@ -1,6 +1,8 @@
 Revision history for Log-Radis
 
 {{$NEXT}}
+
+0.002 2016-05-01
  - Fix documentation
  - Fix failure with Redis
 
