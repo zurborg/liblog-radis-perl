@@ -109,7 +109,7 @@ has redis => (
     },
     builder => sub {
         my $self = shift;
-        return Radis->new(
+        return Redis->new(
             server    => $self->server,
             reconnect => $self->reconnect,
             every     => $self->every,
