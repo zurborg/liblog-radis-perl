@@ -225,10 +225,12 @@ sub log {
 
     # preserve params, which are allowed by client
     # including some mispelled ones
-    $gelf{host}      = delete $gelf{_hostname}  if defined $gelf{_hostname};
-    $gelf{host}      = delete $gelf{_host}      if defined $gelf{_host};
-    $gelf{timestamp} = delete $gelf{_time}      if defined $gelf{_time};
-    $gelf{timestamp} = delete $gelf{_timestamp} if defined $gelf{_timestamp};
+    $gelf{host}         = delete $gelf{_hostname}       if defined $gelf{_hostname};
+    $gelf{host}         = delete $gelf{_host}           if defined $gelf{_host};
+    $gelf{timestamp}    = delete $gelf{_time}           if defined $gelf{_time};
+    $gelf{timestamp}    = delete $gelf{_timestamp}      if defined $gelf{_timestamp};
+    $gelf{full_message} = delete $gelf{_message}        if defined $gelf{_message};
+    $gelf{full_message} = delete $gelf{_full_message}   if defined $gelf{_full_message};
 
     # hostname defaults to system hostname...
     $gelf{host} //= $HOSTNAME;
