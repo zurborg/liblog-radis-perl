@@ -1,6 +1,7 @@
 Revision history for Log-Radis
 
 {{$NEXT}}
+ - preserve full message if given
 
 0.002 2016-05-01
  - Fix documentation
