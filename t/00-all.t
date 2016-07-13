@@ -33,11 +33,11 @@ subtest test1 => sub {
     lives_ok {
         $radis->log(info => 'test1');
     };
-    
+
     $msg = lastmsg();
 
     like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
-    
+
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
@@ -50,11 +50,11 @@ subtest test2 => sub {
     lives_ok {
         $radis->log(info => 'test2', foo => 'bar');
     };
-    
+
     $msg = lastmsg();
 
     like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
-    
+
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
@@ -68,11 +68,11 @@ subtest test3a => sub {
     lives_ok {
         $radis->log(info => 'test3a', host => 'foobar');
     };
-    
+
     $msg = lastmsg();
 
     like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
-    
+
     is_deeply $msg => {
         host => 'foobar',
         version => $Log::Radis::GELF_SPEC_VERSION,
@@ -85,11 +85,11 @@ subtest test3b => sub {
     lives_ok {
         $radis->log(info => 'test3b', hostname => 'foobar');
     };
-    
+
     $msg = lastmsg();
 
     like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
-    
+
     is_deeply $msg => {
         host => 'foobar',
         version => $Log::Radis::GELF_SPEC_VERSION,
@@ -102,7 +102,7 @@ subtest test4a => sub {
     lives_ok {
         $radis->log(info => 'test4a', time => 0);
     };
-    
+
     $msg = lastmsg();
 
     is_deeply $msg => {
@@ -118,7 +118,7 @@ subtest test4b => sub {
     lives_ok {
         $radis->log(info => 'test4b', timestamp => 1);
     };
-    
+
     $msg = lastmsg();
 
     is_deeply $msg => {
@@ -130,30 +130,48 @@ subtest test4b => sub {
     };
 };
 
+subtest test4c => sub {
+    lives_ok {
+        $radis->log(info => 'test4c', full_message => 'foobar');
+    };
+
+    $msg = lastmsg();
+
+    like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
+
+    is_deeply $msg => {
+        host => $Log::Radis::HOSTNAME,
+        version => $Log::Radis::GELF_SPEC_VERSION,
+        short_message => 'test4c',
+        full_message => 'foobar',
+        level => 7,
+    };
+};
+
 subtest test5 => sub {
     lives_ok {
         $radis->log(fatal     => 1);
         $radis->log(emerg     => 1);
         $radis->log(emergency => 1);
-    
+
         $radis->log(alert     => 2);
-    
+
         $radis->log(crit      => 2);
         $radis->log(critical  => 3);
-    
+
         $radis->log(error     => 4);
         $radis->log(err       => 4);
-    
+
         $radis->log(warn      => 5);
         $radis->log(warning   => 5);
-    
+
         $radis->log(note      => 6);
         $radis->log(notice    => 6);
-    
+
         $radis->log(info      => 7);
-    
+
         $radis->log(debug     => 8);
-    
+
         $radis->log(trace     => 9);
         $radis->log(core      => 9);
     };
