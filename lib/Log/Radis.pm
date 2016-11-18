@@ -177,6 +177,13 @@ my %levels = (
     core      => 9,
 );
 
+sub _trim {
+    shift
+    =~ s{\r+}{}sgr
+    =~ s{^\s+}{}sr
+    =~ s{\s+$}{}sr
+}
+
 =method log
 
     $radis->log($level, $message, %additional_gelf_params);
@@ -231,6 +238,7 @@ sub log {
     $gelf{timestamp}    = delete $gelf{_timestamp}      if defined $gelf{_timestamp};
     $gelf{full_message} = delete $gelf{_message}        if defined $gelf{_message};
     $gelf{full_message} = delete $gelf{_full_message}   if defined $gelf{_full_message};
+    $gelf{short_message} = delete $gelf{_short_message} if defined $gelf{_short_message};
 
     # hostname defaults to system hostname...
     $gelf{host} //= $HOSTNAME;
@@ -242,7 +250,16 @@ sub log {
     # so force string, which works fine
     $gelf{timestamp} = ''.$gelf{timestamp};
 
-    $gelf{short_message} = $message;
+    $message = _trim($message);
+
+    if ($message =~ m{\n}s) {
+        my ($short, $full) = split m{\n}s, $message, 2;
+        $gelf{short_message} = _trim(join("  ", map {$_//''} ($short, $gelf{short_message})));
+        $gelf{full_message}  = _trim(join("\n", map {$_//''} ($full , $gelf{full_message})));
+    } else {
+        $gelf{message} = $message;
+    }
+
     $gelf{version} = $GELF_SPEC_VERSION;
     $gelf{level} = $level;
 

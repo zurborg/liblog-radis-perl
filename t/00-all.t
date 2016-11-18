@@ -41,7 +41,7 @@ subtest test1 => sub {
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test1',
+        message => 'test1',
         level => 7,
     };
 };
@@ -58,7 +58,7 @@ subtest test2 => sub {
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test2',
+        message => 'test2',
         level => 7,
         _foo => 'bar',
     };
@@ -76,7 +76,7 @@ subtest test3a => sub {
     is_deeply $msg => {
         host => 'foobar',
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test3a',
+        message => 'test3a',
         level => 7,
     };
 };
@@ -93,7 +93,7 @@ subtest test3b => sub {
     is_deeply $msg => {
         host => 'foobar',
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test3b',
+        message => 'test3b',
         level => 7,
     };
 };
@@ -109,7 +109,7 @@ subtest test4a => sub {
         host => $Log::Radis::HOSTNAME,
         timestamp => 0,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test4a',
+        message => 'test4a',
         level => 7,
     };
 };
@@ -125,7 +125,7 @@ subtest test4b => sub {
         host => $Log::Radis::HOSTNAME,
         timestamp => 1,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test4b',
+        message => 'test4b',
         level => 7,
     };
 };
@@ -142,8 +142,26 @@ subtest test4c => sub {
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test4c',
+        message => 'test4c',
         full_message => 'foobar',
+        level => 7,
+    };
+};
+
+subtest test4d => sub {
+    lives_ok {
+        $radis->log(info => " \r \t \n short \n \n full \r \t \n ");
+    };
+
+    $msg = lastmsg();
+
+    like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
+
+    is_deeply $msg => {
+        host => $Log::Radis::HOSTNAME,
+        version => $Log::Radis::GELF_SPEC_VERSION,
+        short_message => 'short',
+        full_message => 'full',
         level => 7,
     };
 };
@@ -177,13 +195,13 @@ subtest test5 => sub {
     };
 
     while (my $msg = lastmsg()) {
-        is $msg->{level} => $msg->{short_message};
+        is $msg->{level} => $msg->{message};
     }
 };
 
-subtest test6 => sub {
+subtest test6a => sub {
     lives_ok {
-        $radis->log(xxx => 'test6');
+        $radis->log(xxx => 'test6a');
     };
 
     $msg = lastmsg();
