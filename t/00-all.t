@@ -23,6 +23,10 @@ throws_ok {
 
 throws_ok {
     $radis->log(0)
+} qr{log message without level}i;
+
+throws_ok {
+    $radis->log(1)
 } qr{log message without message}i;
 
 my $msg = lastmsg();
@@ -211,12 +215,30 @@ subtest test6a => sub {
     is_deeply $msg => {
         host => $Log::Radis::HOSTNAME,
         version => $Log::Radis::GELF_SPEC_VERSION,
-        short_message => 'test6',
+        message => 'test6a',
         level => undef,
     };
 };
 
-subtest test6 => sub {
+subtest test6b => sub {
+    lives_ok {
+        $radis->default_level('note');
+        $radis->log(0 => 'test6b');
+    };
+
+    $msg = lastmsg();
+
+    like delete($msg->{timestamp}) => qr{^\d+(\.\d+)?$};
+
+    is_deeply $msg => {
+        host => $Log::Radis::HOSTNAME,
+        version => $Log::Radis::GELF_SPEC_VERSION,
+        message => 'test6b',
+        level => 6,
+    };
+};
+
+subtest test7 => sub {
     lives_ok {
         $radis->push('foobar');
         is scalar($redis->lpop($radis->queue)) => 'foobar';

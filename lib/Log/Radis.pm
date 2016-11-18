@@ -117,6 +117,16 @@ has redis => (
     }
 );
 
+=attr default_level
+
+When I<level> is undefined, use this default level
+
+=cut
+
+has default_level => (
+    is => 'rw',
+);
+
 =head1 LOG LEVELS
 
 These levels are known and supposed to be compatible to various other logging engines.
@@ -199,6 +209,8 @@ Overrides are only allowed for I<host>/I<hostname> and I<timestamp>/I<time> para
 sub log {
     my $self = shift;
     my ($level, $message, %gelf) = @_;
+
+    $level ||= $self->default_level;
 
     croak "log message without level" unless defined $level;
     croak "log message without message" unless defined $message;
